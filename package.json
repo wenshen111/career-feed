@@ -6,6 +6,7 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "validate": "node scripts/validate.mjs",
+    "dupes": "node scripts/check_cross_feed_dupes.mjs",
     "test": "node --test tests/*.test.mjs",
     "update:claude": "node scripts/update_feed_claude.mjs"
   }

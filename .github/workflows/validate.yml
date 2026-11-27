@@ -1,4 +1,4 @@
-# 每次 push 或开 PR 时：跑测试，并校验两个情报文件的格式。
+# 每次 push 或开 PR 时：跑测试，校验两个情报文件的格式，再看两份之间有没有漏网的重复。
 name: 校验情报文件
 
 on:
@@ -21,3 +21,7 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: 校验 feed-claude.json 和 feed-gpt.json
         run: node scripts/validate.mjs
+      - name: 跨 feed 重复检查（只报告，不会失败）
+        if: always()
+        continue-on-error: true
+        run: node scripts/check_cross_feed_dupes.mjs
