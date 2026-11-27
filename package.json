@@ -1,0 +1,12 @@
+{
+  "name": "career-feed",
+  "private": true,
+  "description": "闻神职业养成 App 的每日情报文件和校验脚本（零依赖）",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "update:claude": "node scripts/update_feed_claude.mjs"
+  }
+}

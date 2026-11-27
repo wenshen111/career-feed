@@ -1,0 +1,64 @@
+# 每天跑一次 Claude 的情报更新，改动了就提交回仓库。
+#
+# 时间：cron 用的是 UTC。
+#   冬令时（10 月最后一个周日 ～ 3 月最后一个周日）：'47 6 * * *' = 意大利 07:47
+#   夏令时：要改成 '47 5 * * *'，否则会晚一小时（08:47）
+# GitHub 的定时任务在高峰期常常会晚几分钟到半小时才开始，这是 GitHub 那边的排队，不是脚本的问题。
+#
+# 现在是“占位”阶段：只检查文件在不在、跑一遍去重合并的脚手架（PIPELINE_CHECK=1 会放一条
+# “管线测试”占位情报）、校验、提交。真正抓情报的部分以后写在 scripts/update_feed_claude.mjs
+# 的 collectCandidates 里。
+name: Claude 每日情报
+
+on:
+  schedule:
+    - cron: '47 6 * * *'
+  workflow_dispatch: # 允许在网页上手动点 “Run workflow”
+
+permissions:
+  contents: write # 需要把更新后的 feed-claude.json 提交回仓库
+
+concurrency:
+  group: daily-claude
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 检查两个情报文件都在
+        run: |
+          for f in feed-claude.json feed-gpt.json; do
+            if [ ! -f "$f" ]; then echo "::error::找不到 $f"; exit 1; fi
+          done
+          echo "两个文件都在。"
+
+      - name: 读 GPT 的文件去重，合并写入 feed-claude.json
+        env:
+          PIPELINE_CHECK: '1'
+        run: node scripts/update_feed_claude.mjs
+
+      - name: 校验
+        run: node scripts/validate.mjs
+
+      - name: 有改动就提交
+        run: |
+          if git diff --quiet -- feed-claude.json; then
+            echo "没有改动，不提交。"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add feed-claude.json
+          git commit -m "情报：更新 feed-claude.json（$(TZ=Europe/Rome date +%F)）"
+          for i in 1 2 3; do
+            git pull --rebase --quiet && git push && exit 0
+            sleep $((i * 5))
+          done
+          echo "::error::推送失败"
+          exit 1

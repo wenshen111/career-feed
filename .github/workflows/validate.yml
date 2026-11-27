@@ -1,0 +1,23 @@
+# 每次 push 或开 PR 时：跑测试，并校验两个情报文件的格式。
+name: 校验情报文件
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 跑测试
+        run: node --test tests/*.test.mjs
+      - name: 校验 feed-claude.json 和 feed-gpt.json
+        run: node scripts/validate.mjs
