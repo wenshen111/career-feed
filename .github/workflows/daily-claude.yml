@@ -1,29 +1,21 @@
-# 每天跑一次 Claude 的情报更新，改动了就提交回仓库。
+# 每天检查一次：Claude 今天的情报写进来了没有、格式对不对。
 #
-# 时间：cron 用的是 UTC。
-#   冬令时（10 月最后一个周日 ～ 3 月最后一个周日）：'47 6 * * *' = 意大利 07:47
-#   夏令时：要改成 '47 5 * * *'，否则会晚一小时（08:47）
-# GitHub 的定时任务在高峰期常常会晚几分钟到半小时才开始，这是 GitHub 那边的排队，不是脚本的问题。
-#
-# 现在是“占位”阶段：只检查文件在不在、跑一遍去重合并的脚手架（PIPELINE_CHECK=1 会放一条
-# “管线测试”占位情报）、校验、提交。真正抓情报的部分以后写在 scripts/update_feed_claude.mjs
-# 的 collectCandidates 里。
-name: Claude 每日情报
+# 情报本身由 Claude 的定时任务（每天意大利时间 07:47）搜集、去重、提交，见 docs/claude-daily.md。
+# 这个检查在它之后跑：UTC 07:30 = 意大利冬令时 08:30。
+#   夏令时（3 月最后一个周日起）改成 '30 6 * * *'，保持在意大利 08:30。
+# 如果今天没写入，这个检查会失败，GitHub 会给仓库主人发一封失败通知邮件。
+name: Claude 每日情报体检
 
 on:
   schedule:
-    - cron: '47 6 * * *'
+    - cron: '30 7 * * *'
   workflow_dispatch: # 允许在网页上手动点 “Run workflow”
 
 permissions:
-  contents: write # 需要把更新后的 feed-claude.json 提交回仓库
-
-concurrency:
-  group: daily-claude
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  update:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,34 +23,18 @@ jobs:
         with:
           node-version: 20
 
-      - name: 检查两个情报文件都在
-        run: |
-          for f in feed-claude.json feed-gpt.json; do
-            if [ ! -f "$f" ]; then echo "::error::找不到 $f"; exit 1; fi
-          done
-          echo "两个文件都在。"
-
-      - name: 读 GPT 的文件去重，合并写入 feed-claude.json
-        env:
-          PIPELINE_CHECK: '1'
-        run: node scripts/update_feed_claude.mjs
-
-      - name: 校验
+      - name: 校验两个情报文件
         run: node scripts/validate.mjs
 
-      - name: 有改动就提交
+      - name: 今天 Claude 写入了吗
         run: |
-          if git diff --quiet -- feed-claude.json; then
-            echo "没有改动，不提交。"
-            exit 0
+          today=$(TZ=Europe/Rome date +%F)
+          updated=$(node -p "require('./feed-claude.json').updated.slice(0,10)")
+          if [ "$updated" != "$today" ]; then
+            echo "::error::今天（$today）Claude 的情报还没写入，最后一次是 $updated。"
+            exit 1
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add feed-claude.json
-          git commit -m "情报：更新 feed-claude.json（$(TZ=Europe/Rome date +%F)）"
-          for i in 1 2 3; do
-            git pull --rebase --quiet && git push && exit 0
-            sleep $((i * 5))
-          done
-          echo "::error::推送失败"
-          exit 1
+          echo "今天的情报已写入（$updated）。"
+
+      - name: 检查链接（只提醒）
+        run: node scripts/check_links.mjs || true
