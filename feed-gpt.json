@@ -1,7 +1,31 @@
 {
   "src": "gpt",
-  "updated": "2026-11-27T22:00:00+01:00",
-  "items": [],
-  "todos": [],
-  "note": ""
+  "updated": "2026-11-27T23:59:16+01:00",
+  "items": [
+    {
+      "id": "gpt-2026-11-27-agora-volunteers",
+      "key": "ascsa.edu.gr/programs/summer-excavation-programs/agora-summer-volunteer-program",
+      "found": "2026-11-27",
+      "kind": "学校",
+      "title": "Athenian Agora 2027：六周发掘志愿项目，提供住宿及伙食补贴",
+      "org": "American School of Classical Studies at Athens",
+      "loc": "希腊雅典；2027-06-14 至 2027-07-23",
+      "pay": "免费合住住宿；伙食补贴为每周约120美元的欧元等值额；非工资，往返交通自理",
+      "deadline": "2026-12-07",
+      "imp": 3,
+      "why": "可作为有补贴的田野经历候选，项目面向所有国籍、优先古典考古研究生，须连续参加六周并提交两封推荐信，是否适合申请待私人背景与时间安排补齐后判断。",
+      "link": "https://www.ascsa.edu.gr/programs/summer-excavation-programs/agora-summer-volunteer-program"
+    }
+  ],
+  "todos": [
+    {
+      "id": "gpt-todo-2026-11-27-1",
+      "key": "核对Agora六周档期并决定是否准备两封推荐信",
+      "t": "核对Agora六周档期并决定是否准备两封推荐信",
+      "due": "2026-11-30",
+      "why": "申请及两封推荐信均须在12月7日截止前提交，先确认时间投入是否值得。",
+      "rel": "gpt-2026-11-27-agora-volunteers"
+    }
+  ],
+  "note": "首次非个性化手动试跑：私人背景与11条路线尚待提供，未编造路线ID或完成个人资格匹配；已读取Claude的2026-11-27版3条情报及空白GPT上一版，本条无重复。已排除过期岗位及语言、开放状态未核实的实习。JSON结构自检通过：无adj、ID与key不重复、字段和类别合法、无超30天记录；本次无德语岗位或欧盟境外岗位，相关专项检查不适用。手机通知实际送达、用户粘贴后的仓库校验绿勾尚未验证。"
 }
