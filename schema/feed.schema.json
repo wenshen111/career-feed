@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/wenshen111/career-feed/schema/feed.schema.json",
+  "title": "情报文件（feed-claude.json / feed-gpt.json）",
+  "description": "按《GPT说明-职业养成App》6.5 节。两个文件格式完全一样，只是 src 不同。跨字段规则（id 前缀、30 天、adj 只许 Claude 写、key 唯一）不在这里表达，由 scripts/validate.mjs 检查。",
+  "type": "object",
+  "required": ["src", "updated", "items", "todos", "note"],
+  "additionalProperties": false,
+  "properties": {
+    "src": { "type": "string", "enum": ["claude", "gpt"] },
+    "updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "带时区的 ISO 时间，例如 2026-11-26T07:47:00+01:00"
+    },
+    "items": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/item" }
+    },
+    "todos": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/todo" }
+    },
+    "adj": {
+      "type": "object",
+      "description": "改长期成功率的修正值（百分点），键是 data.js 里的路线 id。只允许出现在 feed-claude.json。",
+      "additionalProperties": false,
+      "patternProperties": {
+        "^[a-z][a-z0-9_]*$": { "type": "integer", "minimum": -100, "maximum": 100 }
+      }
+    },
+    "note": { "type": "string", "description": "今天给闻神的一句话，可以为空字符串" }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "required": ["id", "key", "found", "kind", "title", "imp", "why"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "key": { "type": "string", "minLength": 1, "description": "去重用：有链接就用规范化的链接，没有就用“机构 + 标题”" },
+        "found": { "type": "string", "format": "date" },
+        "kind": { "type": "string", "enum": ["工作", "兼职", "学校", "联合国", "资助", "比赛", "热点"] },
+        "title": { "type": "string", "minLength": 1 },
+        "org": { "type": "string" },
+        "loc": { "type": "string" },
+        "pay": { "type": "string" },
+        "deadline": { "type": ["string", "null"], "format": "date-or-empty" },
+        "imp": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "why": { "type": "string", "minLength": 1 },
+        "link": { "type": "string", "pattern": "^https?://" }
+      }
+    },
+    "todo": {
+      "type": "object",
+      "required": ["id", "key", "t"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^(claude|gpt)-todo-\\d{4}-\\d{2}-\\d{2}-" },
+        "key": { "type": "string", "minLength": 1 },
+        "t": { "type": "string", "minLength": 1 },
+        "due": { "type": ["string", "null"], "format": "date-or-empty" },
+        "why": { "type": "string" },
+        "rel": { "type": "string" }
+      }
+    }
+  }
+}
