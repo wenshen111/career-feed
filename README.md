@@ -26,6 +26,7 @@ scripts/validate.mjs      校验两个文件
 scripts/update_feed_claude.mjs   Claude 每日更新：读 GPT 的文件去重，再把当天的候选合并追加
 scripts/check_links.mjs   检查情报链接还能不能打开（只提醒）
 docs/claude-daily.md      Claude 每日情报的工作手册
+scripts/GPT每日情报任务指令.md   GPT 每日情报的流程、格式和给 ChatGPT 定时任务的提示词
 scripts/lib/              去重（规范化链接、双字相似度）和格式检查的小工具
 tests/                    自动测试
 .github/workflows/        自动任务：push 时校验；每天体检 Claude 的文件有没有更新
