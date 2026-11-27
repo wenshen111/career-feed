@@ -127,3 +127,25 @@ test('意大利时间：冬令时 +01:00，夏令时 +02:00', () => {
   assert.equal(romeISO(new Date('2026-07-01T05:47:00Z')), '2026-07-01T07:47:00+02:00');
   assert.equal(romeDate(new Date('2026-11-27T23:30:00Z')), '2026-11-28');
 });
+
+// ---------- 候选文件 ----------
+
+import { readCandidates } from '../scripts/update_feed_claude.mjs';
+import { writeFileSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+test('候选文件：正常读入；不认识的字段要报错', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'cand-'));
+  const good = join(dir, 'good.json');
+  writeFileSync(good, JSON.stringify({ items: [{ kind: '工作', title: 't', imp: 3, why: 'w' }], note: 'n' }));
+  const c = readCandidates(good);
+  assert.equal(c.items.length, 1);
+  assert.deepEqual(c.todos, []);
+  assert.equal(c.note, 'n');
+  assert.equal(c.adj, undefined);
+  const badf = join(dir, 'bad.json');
+  writeFileSync(badf, JSON.stringify({ itmes: [] }));
+  assert.throws(() => readCandidates(badf), /不认识的字段 itmes/);
+  assert.deepEqual(readCandidates(null), { items: [], todos: [] });
+});

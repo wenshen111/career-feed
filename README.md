@@ -23,10 +23,12 @@ feed-claude.json          Claude 写（src: "claude"），只有它可以写 adj
 feed-gpt.json             GPT 写（src: "gpt"），不能有 adj
 schema/feed.schema.json   情报文件的格式（JSON Schema）
 scripts/validate.mjs      校验两个文件
-scripts/update_feed_claude.mjs   Claude 每日更新的脚手架：读 GPT 的文件去重，再合并追加
+scripts/update_feed_claude.mjs   Claude 每日更新：读 GPT 的文件去重，再把当天的候选合并追加
+scripts/check_links.mjs   检查情报链接还能不能打开（只提醒）
+docs/claude-daily.md      Claude 每日情报的工作手册
 scripts/lib/              去重（规范化链接、双字相似度）和格式检查的小工具
 tests/                    自动测试
-.github/workflows/        自动任务：push 时校验；每天定时更新 Claude 的文件
+.github/workflows/        自动任务：push 时校验；每天体检 Claude 的文件有没有更新
 ```
 
 ## App 怎么读
@@ -51,20 +53,14 @@ raw 链接有几分钟缓存，刚提交的内容可能要等一会儿才读得�
 
 只是“提醒”、不会拦下的：有链接但 `key` 不是规范化链接（沿用对方的 key 时正常）、截止日期已过。
 
-## 每日任务的时间
+## 每天的情报怎么来
 
-`.github/workflows/daily-claude.yml` 用 UTC 计时：
+1. **07:47（意大利时间）Claude 的定时任务**：按 [`docs/claude-daily.md`](docs/claude-daily.md) 搜集、打开原页核实，写一个临时候选文件，用 `scripts/update_feed_claude.mjs --candidates` 读 GPT 的文件去重后合并，校验通过后直接提交到 `main`。这个定时任务设在 Claude 那边，不在 GitHub 上，用的是闻神现有的 Claude 订阅，不花钱。闻神的个人背景只写在定时任务的指令里，不进这个公开仓库。
+2. **08:30（意大利冬令时）GitHub 体检**：`.github/workflows/daily-claude.yml` 校验两个文件，并检查 `feed-claude.json` 今天有没有更新。没更新就失败，GitHub 会给仓库主人发一封失败通知。
 
-| 时期 | cron | 意大利时间 |
-| --- | --- | --- |
-| 冬令时（10 月最后一个周日起） | `47 6 * * *` | 07:47 |
-| 夏令时（3 月最后一个周日起） | `47 5 * * *` | 07:47 |
+体检用 UTC 计时：冬令时 `30 7 * * *`；**2027 年 3 月 28 日切夏令时后改成 `30 6 * * *`**，否则会变成 09:30 才检查。Claude 的定时任务按意大利时区设置，会自己跟着夏令时走。
 
-**现在是冬令时，用的是 `47 6 * * *`。** 2027 年 3 月 28 日（周日）切夏令时后要改成 `47 5 * * *`，不改的话会变成 08:47 才跑。GitHub 的定时任务高峰期经常会晚几分钟到半小时开始。
-
-现在每日任务还是**占位**：检查两个文件都在，跑一遍去重合并，放一条“管线测试”的占位情报（只加一次，之后自己去重跳过），校验通过就提交。真正的抓取以后接在 `scripts/update_feed_claude.mjs` 的 `collectCandidates` 里，到时候把这条占位情报删掉。
-
-想马上跑一次：仓库页面 → **Actions** → 左边选“Claude 每日情报” → **Run workflow**。
+想马上体检一次：仓库页面 → **Actions** → 左边选“Claude 每日情报体检” → **Run workflow**。
 
 ## 本地跑（可选，需要 Node 20 以上，不用装任何依赖）
 

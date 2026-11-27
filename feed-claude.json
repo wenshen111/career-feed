@@ -1,8 +1,59 @@
 {
   "src": "claude",
-  "updated": "2026-11-27T22:00:00+01:00",
-  "items": [],
-  "todos": [],
+  "updated": "2026-11-27T23:06:15+01:00",
+  "items": [
+    {
+      "id": "claude-2026-11-27-visaguard-berlin-post-blaue-karte-gehalt",
+      "kind": "热点",
+      "title": "德国蓝卡 2027 年工资门槛公布：普通 €53,100，应届和短缺职业 €48,108.60",
+      "org": "德国联邦政府（律所 VISAGUARD 转述）",
+      "loc": "德国",
+      "deadline": "",
+      "imp": 4,
+      "why": "比 2026 年各涨了约 €2,400。你毕业三年内适用 €48,108.60 这条线，柏林摄影测量岗 €47–55k 的低端会掉到线下，谈薪时要守住 48.1k 以上。还要等联邦内政部 12 月 31 日前在联邦公报正式公布。",
+      "link": "https://www.visaguard.berlin/post/blaue-karte-gehalt-f%C3%BCr-2027-ver%C3%B6ffentlicht",
+      "found": "2026-11-27",
+      "key": "visaguard.berlin/post/blaue-karte-gehalt-f%c3%bcr-2027-ver%c3%b6ffentlicht"
+    },
+    {
+      "id": "claude-2026-11-27-careers-unesco-org-job-multiple-internsh",
+      "kind": "联合国",
+      "title": "INTERNSHIP: Culture Sector（世界遗产、活态遗产、紧急状况中的文化）",
+      "org": "UNESCO",
+      "loc": "巴黎总部、各地办事处或研究所，1–6 个月",
+      "pay": "无报酬",
+      "deadline": "2026-12-31",
+      "imp": 3,
+      "why": "你是硕士在读，资格上完全够，英语也够。但 UNESCO 实习一分钱不给，签证、路费、医疗保险全自理；它的价值是给 YPP 和以后联合国岗位攒一行履历，值不值得要算清楚这几个月的花销。",
+      "link": "https://careers.unesco.org/job/Multiple-INTERNSHIP-Culture-Sector/1347730257/",
+      "found": "2026-11-27",
+      "key": "careers.unesco.org/job/multiple-internship-culture-sector/1347730257"
+    },
+    {
+      "id": "claude-2026-11-27-xn-abisz-archologie-4nb-de-karriere",
+      "kind": "工作",
+      "title": "Grabungstechniker*in (m/w/d)",
+      "org": "AbisZ-Archäologie",
+      "loc": "德国北莱茵-威斯特法伦，科隆 / 波恩一带",
+      "pay": "未写",
+      "deadline": "",
+      "imp": 3,
+      "why": "明确要会测量、摄影测量或相机记录，正是你的手艺；要求几年发掘记录经验，你在加拿大商业考古的经历能对上。页面没写语言要求，但德国工地日常用德语。技术员工资大概率够不到蓝卡线，要走普通技术工签证，先问清楚他们办不办。",
+      "link": "https://www.xn--abisz-archologie-4nb.de/karriere/",
+      "found": "2026-11-27",
+      "key": "xn--abisz-archologie-4nb.de/karriere"
+    }
+  ],
+  "todos": [
+    {
+      "id": "claude-todo-2026-11-27-1",
+      "t": "决定要不要投 UNESCO 文化部门实习：先算清楚几个月无薪的花销",
+      "due": "2026-12-20",
+      "why": "12 月 31 日截止，留出写动机信的时间。",
+      "rel": "ypp",
+      "key": "决定要不要投 UNESCO 文化部门实习：先算清楚几个月无薪的花销"
+    }
+  ],
   "adj": {},
-  "note": ""
+  "note": "第一期只有三条。今晚核实了十几个页面，大多数已经截止了，过期的我不发。"
 }

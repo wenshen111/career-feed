@@ -4,14 +4,14 @@
 // 流程（《GPT说明》6.5、6.6 第 1 条）：
 //   1. 读自己的 feed-claude.json，删掉超过 30 天的情报和待办
 //   2. 读对方的 feed-gpt.json（源头去重）
-//   3. 拿到今天的新候选（现在是空实现；真正的抓取以后接在 collectCandidates 里）
+//   3. 读今天的新候选（--candidates 文件，由 Claude 定时任务搜集，见 docs/claude-daily.md）
 //   4. 逐条去重：自己发过的不重发；GPT 发过的，没有新角度就不发，有新角度就沿用对方的 key、why 只写新角度
 //   5. 合并追加，更新 updated 和 note，先校验，校验通过才写回文件
 //
 // 用法：
 //   node scripts/update_feed_claude.mjs              # 正常运行
 //   node scripts/update_feed_claude.mjs --dry-run    # 只打印结果，不写文件
-//   PIPELINE_CHECK=1 node scripts/update_feed_claude.mjs   # 加一条“管线测试”占位情报（证明端到端能跑）
+//   node scripts/update_feed_claude.mjs --candidates /tmp/today.json   # 合并今天的新候选
 //   PEER_FEED_URL=https://... node scripts/...       # 从网上读对方文件，默认读同目录下的 feed-gpt.json
 
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -75,27 +75,24 @@ async function loadPeer() {
   return readJSON(PEER_FILE, emptyFeed('gpt'));
 }
 
-// ---------- 候选：真正的情报抓取以后写在这里 ----------
+// ---------- 候选：当天找到的新情报 ----------
 
-// 返回 { items: [...], todos: [...], adj?: {...}, note?: '...' }
-// 每个候选 item 的写法和 6.5 一样，可以不写 id（会自动生成），可以多一个 newAngle 字段：
-// 当它和 GPT 已发的某条是同一件事时，newAngle 就是“新角度”那一句；没有 newAngle 就不发。
-export async function collectCandidates({ today }) {
-  const items = [];
-  if (process.env.PIPELINE_CHECK === '1') {
-    const link = 'https://github.com/wenshen111/career-feed';
-    items.push({
-      kind: '热点',
-      title: '管线测试：这一条不是真情报',
-      org: 'career-feed',
-      imp: 1,
-      why: '证明每日任务能读对方文件、去重、写入并提交回仓库。真正的抓取接上后删掉这条。',
-      link,
-      key: normalizeLink(link),
-      found: today,
-    });
+// 候选由每天 07:47 的 Claude 定时任务搜集、核实后写进一个 JSON 文件（见 docs/claude-daily.md），
+// 用 --candidates 文件路径 传进来。文件格式：
+//   { "items": [...], "todos": [...], "note": "今天的一句话", "adj": { "tech": 3 } }
+// - items / todos 的写法和 6.5 一样，可以不写 id（会自动生成）、found（默认今天）、key（自动从链接或“机构 标题”生成）。
+// - 可以多一个 newAngle 字段：和 GPT 已发的某条是同一件事时，newAngle 就是“新角度”那一句；没有 newAngle 就不发。
+// - adj 不写就沿用昨天的；写了就整个替换。
+// 不传 --candidates 时没有新候选，只做清理（删超过 30 天的）和刷新 updated。
+export function readCandidates(path) {
+  if (!path) return { items: [], todos: [] };
+  const c = JSON.parse(readFileSync(path, 'utf8'));
+  for (const k of ['items', 'todos']) {
+    if (c[k] !== undefined && !Array.isArray(c[k])) throw new Error(`候选文件里的 ${k} 必须是数组`);
   }
-  return { items, todos: [], note: '' };
+  const allowed = new Set(['items', 'todos', 'note', 'adj']);
+  for (const k of Object.keys(c)) if (!allowed.has(k)) throw new Error(`候选文件里不认识的字段 ${k}`);
+  return { items: c.items || [], todos: c.todos || [], note: c.note, adj: c.adj };
 }
 
 // ---------- 合并 ----------
@@ -172,12 +169,16 @@ export function mergeFeed(own, peer, cand, { today, updated }) {
 // ---------- 主程序 ----------
 
 async function main() {
-  const dry = process.argv.includes('--dry-run');
+  const args = process.argv.slice(2);
+  const dry = args.includes('--dry-run');
+  const ci = args.indexOf('--candidates');
+  const candPath = ci >= 0 ? args[ci + 1] : null;
+  if (ci >= 0 && !candPath) throw new Error('--candidates 后面要跟文件路径');
   const now = new Date();
   const today = romeDate(now);
   const own = readJSON(OWN_FILE, emptyFeed(SRC));
   const peer = await loadPeer();
-  const cand = await collectCandidates({ today, own, peer });
+  const cand = readCandidates(candPath);
   const { feed, log } = mergeFeed(own, peer, cand, { today, updated: romeISO(now) });
 
   const { errors, warnings } = validateFeed(feed, OWN_FILE);
