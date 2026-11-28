@@ -1,6 +1,6 @@
 {
   "src": "claude",
-  "updated": "2026-11-27T23:06:15+01:00",
+  "updated": "2026-11-28T07:50:35+01:00",
   "items": [
     {
       "id": "claude-2026-11-27-visaguard-berlin-post-blaue-karte-gehalt",
@@ -42,6 +42,34 @@
       "link": "https://www.xn--abisz-archologie-4nb.de/karriere/",
       "found": "2026-11-27",
       "key": "xn--abisz-archologie-4nb.de/karriere"
+    },
+    {
+      "id": "claude-2026-11-28-arbeitsagentur-de-jobsuche-jobdetail-100",
+      "kind": "工作",
+      "title": "Reality Capture Technician (m/f/d)",
+      "org": "Murphy Geospatial Germany GmbH（Woolpert 旗下）",
+      "loc": "德国德累斯顿，全职、无固定期限",
+      "pay": "未写（只说 competitive）",
+      "deadline": "",
+      "imp": 3,
+      "why": "工作语言是英语，不卡德语，这点少见。但硬门槛是地面激光扫描点云的处理和配准经验（Cyclone、CloudCompare 一类），你的强项是摄影测量，要在简历里把点云处理那部分单独写实；另外写明要有德国全职工作权，没说担保签证，投之前先问能不能办工签。",
+      "link": "https://www.arbeitsagentur.de/jobsuche/jobdetail/10001-1003560128-S",
+      "found": "2026-11-28",
+      "key": "arbeitsagentur.de/jobsuche/jobdetail/10001-1003560128-s"
+    },
+    {
+      "id": "claude-2026-11-28-darv-de-fileadmin-user-upload-verwaltung",
+      "kind": "工作",
+      "title": "Technische und wissenschaftliche Grabungsleitung (m/w/d)",
+      "org": "DENKMAL3D GmbH & Co. KG",
+      "loc": "德国下萨克森 Vechta / 北威 Greven，北德各地工地",
+      "pay": "按资历分级，未写数字",
+      "deadline": "",
+      "imp": 2,
+      "why": "公司本身做三维记录和数字化，方向对，学历你也够（考古硕士）。但要求德语“非常好”、至少 12 个月中欧发掘经验和带人经验，加拿大的经历不算中欧，这两条现在都卡你。先存着，德语上来以后再看。",
+      "link": "https://www.darv.de/fileadmin/user_upload/Verwaltung/05_Stellenanzeigen/2026/DENKMAL3D_Grabungsleitung.pdf",
+      "found": "2026-11-28",
+      "key": "darv.de/fileadmin/user_upload/verwaltung/05_stellenanzeigen/2026/denkmal3d_grabungsleitung.pdf"
     }
   ],
   "todos": [
@@ -55,5 +83,5 @@
     }
   ],
   "adj": {},
-  "note": "第一期只有三条。今晚核实了十几个页面，大多数已经截止了，过期的我不发。"
+  "note": "今天两条，都是德国的三维/测绘方向，门槛都写在 why 里。查了十几个页面，多数是已截止的（TU Delft 遥感岗 11 月 11 日截止、Hull 三维博士 2 月截止），阿布扎比的博物馆教育岗要求阿拉伯语流利，没发。"
 }
